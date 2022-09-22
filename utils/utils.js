@@ -78,6 +78,15 @@ function verdict(a, b, msg) {
         return false
     }
 }
-module.exports = { yellow, red, green, cyan, verdict }
+
+function closeEnough(n, slop, target) {
+    if ( n > ( target - slop) && n < ( target + slop ) ) {
+        return true 
+    } else {
+        return false
+    }
+}
+
+module.exports = { yellow, red, green, cyan, verdict, closeEnough }
 
 // https://www.geeksforgeeks.org/naive-bayes-classifiers/
