@@ -46,7 +46,6 @@ function red(msg) {
     }
 }
 
-
 function green(msg) {
     const type = typeof msg
     if (type === "object") {
@@ -57,7 +56,6 @@ function green(msg) {
         console.log(x)
     }
 }
-
 
 function cyan(msg) {
     const type = typeof msg
@@ -70,35 +68,6 @@ function cyan(msg) {
     }
 }
 
-function log(msg) {
-    console.log(msg)
-}
-
-
-function getExcelLikeLetter(str) {
-    if (str === undefined) {
-        return "A"
-    }
-    let index = str.length - 1;
-    let baseCode = str.charCodeAt(index);
-    do {
-        baseCode = str.charCodeAt(index);
-        let strArr = str.split("");
-        if (strArr[index] == "Z") {
-            strArr[index] = "A";
-            if (index == 0) {
-                strArr.unshift("A");
-            }
-        }
-        else {
-            strArr[index] = String.fromCharCode(baseCode + 1);
-        }
-        str = strArr.join("");
-        index--;
-    } while (baseCode == 90)
-    return str;
-}
-
 
 function verdict(a, b, msg) {
     if ( JSON.stringify(a) === JSON.stringify(b)) {
@@ -109,6 +78,6 @@ function verdict(a, b, msg) {
         return false
     }
 }
-module.exports = { yellow, red, green, cyan, log, getExcelLikeLetter, verdict }
+module.exports = { yellow, red, green, cyan, verdict }
 
 // https://www.geeksforgeeks.org/naive-bayes-classifiers/

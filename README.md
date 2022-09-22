@@ -23,9 +23,10 @@ The first 4 columns are 'dependent features' and the 'Play' column is the 'respo
 The fundamental Naive Bayes assumption is that each feature makes an is INDEPENDENT and EQUAL in weight
 
 # Formula  
+```json
                 {P(B|A) P(A)}     
  P(A|B) =   ______________________  
                     {P(B)}   
-                      
+```                      
 # url
 https://www.geeksforgeeks.org/naive-bayes-classifiers/
