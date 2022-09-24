@@ -41,10 +41,6 @@ function get_sum_of_labels(labels, prediction) {
     return result
 }
 
-
-
-
-
 function train( information, prediction) {
     //cyan( "train(" + JSON.stringify(information) + ",'" + prediction + "')")
     // dependents!
