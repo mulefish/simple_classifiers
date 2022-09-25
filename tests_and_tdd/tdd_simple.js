@@ -2,10 +2,10 @@
 
 
 const {
-    yellow, green, verdict, cyan, closeEnough
+    verdict, closeEnough
 } = require("../utils/utils.js")
 
-const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels, classify } = require("../training/version2.js")
+const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels, classify } = require("../training/logic.js")
 
 
 const get_data_via_file_test = async () => {
@@ -168,10 +168,6 @@ const test_classify_ThisWillBeCloseToTheNormalWayToUseThis = () => {
     const expected = {"prediction": "Yes","score": 0.021164021164021163}
     verdict(result, expected, "This is close to a real world usage. And it found: " + JSON.stringify( result ) ) 
 }
-
-
-
-
 
 if (require.main === module) {
     const main = async () => {
