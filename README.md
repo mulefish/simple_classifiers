@@ -29,4 +29,5 @@ The fundamental Naive Bayes assumption is that each feature makes an is INDEPEND
                     {P(B)}   
 ```                      
 # url
+A nice description + the data for the tests herein:   
 https://www.geeksforgeeks.org/naive-bayes-classifiers/
