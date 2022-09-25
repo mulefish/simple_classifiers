@@ -1,9 +1,6 @@
 const csv = require('csv-parser')
-const {
-    yellow, green, cyan, red
-} = require("../utils/utils.js")
 const fs = require('fs')
-const { info } = require('console')
+const { red } = require('../utils/utils')
 
 let predictions = {}     
 let matrix = {}
@@ -24,25 +21,22 @@ function get_sum_of_labels(labels, prediction) {
     for ( let label in labels ) {
         const value = labels[label]
         const n = matrix[label][prediction][value]
-        //green(n + " / " + p )
         probs.push(n / p)
     }
     let allThePredictions = 0 
     for ( let k in predictions ) {
         allThePredictions += predictions[k]
     }
-    //green( p + " / " + allThePredictions)
     probs.push(p / allThePredictions)
-
     let result = probs[0] 
     for ( let i = 1; i < probs.length; i++ ) { 
         result *= probs[i] 
     }
+
     return result
 }
 
 function train( information, prediction) {
-    //cyan( "train(" + JSON.stringify(information) + ",'" + prediction + "')")
     // dependents!
     for ( let label in information ) { 
         let value = information[label]        
@@ -78,7 +72,6 @@ async function read_csv_file(path_to_file, dependentLabels, prediction) {
                         information[label] = row[label]
                     })
                     train( information, row[prediction])
-
                 rowIndex++
             })
             .on('end', () => {
@@ -87,16 +80,39 @@ async function read_csv_file(path_to_file, dependentLabels, prediction) {
     });
 }
 
+function classify(labels) { 
+    let score = 0 
+    let found = undefined
+    for ( let prediction in predictions ) {
+        const s = get_sum_of_labels(labels, prediction)
+        if ( score < s ) {
+            score = s
+            found = prediction
+        }
+    }
+    return { prediction:found, score: score }
+}
 
+// This entire require.main stuff is NOT needed. It is here just to show me, in a year's time, how to run this. 
 if (require.main === module) {
-    // Just a self test: Included here mostly to show how to use this.
+    red("BEGIN DEMO CODE")
     const main = async (path_to_data, empty_matrix) => { 
         const dependentVariables = ["Outlook", "Temperature", "Humidity", "Windy"]
         const prediction = "Play"
-        const x = await read_csv_file("./../data/weather.csv", dependentVariables, prediction)
-        cyan(x)
-        // cyan("The end")
+        await read_csv_file("./../data/weather.csv", dependentVariables, prediction)
+
+        // See? The 'findThis' lables are all possibliblities inside to weather.csv file. An weird kittycats or dinosaurs. 
+        const findThis = {
+            Outlook: "Sunny",
+            Temperature: "Hot",
+            Humidity: "Normal",
+            Windy: "False"
+        }
+        const result = classify(findThis)
+        red("DEMONSTRATION CODE FOUND: " + JSON.stringify(result) )
+        red("END DEMO CODE")    
     }
     main()
+
 }
-module.exports = { read_csv_file, getMatrix,getPredictions,train, beginTraining, get_sum_of_labels  }
+module.exports = { read_csv_file, getMatrix,getPredictions,train, beginTraining, get_sum_of_labels, classify  }

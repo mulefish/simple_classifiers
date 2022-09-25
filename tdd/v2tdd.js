@@ -5,7 +5,7 @@ const {
     yellow, green, verdict, cyan, closeEnough
 } = require("../utils/utils.js")
 
-const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels } = require("../training/version2.js")
+const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels, classify } = require("../training/version2.js")
 
 
 const get_data_via_file_test = async () => {
@@ -132,6 +132,47 @@ const test_get_answer_manually = () => {
     const expected = { yep: 0.8223684210526315, nah: 0.17763157894736847 }
     verdict(actual, expected, "test_get_answer_manually: " + JSON.stringify(actual))
 }
+
+const test_classify_ThisWillBeCloseToTheNormalWayToUseThis = () => { 
+    // Zero stuff out!
+    beginTraining() 
+
+    // Populate the data! 
+    train({ "Outlook": "Rainy", "Temperature": "Hot", "Humidity": "High", "Windy": "False" }, 'No')
+    train({ "Outlook": "Rainy", "Temperature": "Hot", "Humidity": "High", "Windy": "True" }, 'No')
+    train({ "Outlook": "Overcast", "Temperature": "Hot", "Humidity": "High", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Mild", "Humidity": "High", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Cool", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Cool", "Humidity": "Normal", "Windy": "True" }, 'No')
+    train({ "Outlook": "Overcast", "Temperature": "Cool", "Humidity": "Normal", "Windy": "True" }, 'Yes')
+    train({ "Outlook": "Rainy", "Temperature": "Mild", "Humidity": "High", "Windy": "False" }, 'No')
+    train({ "Outlook": "Rainy", "Temperature": "Cool", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Mild", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Rainy", "Temperature": "Mild", "Humidity": "Normal", "Windy": "True" }, 'Yes')
+    train({ "Outlook": "Overcast", "Temperature": "Mild", "Humidity": "High", "Windy": "True" }, 'Yes')
+    train({ "Outlook": "Overcast", "Temperature": "Hot", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Mild", "Humidity": "High", "Windy": "True" }, 'No')
+
+    // Look for this!
+    const findThis = {
+        Outlook: "Sunny",
+        Temperature: "Hot",
+        Humidity: "Normal",
+        Windy: "False"
+    }
+
+    // Get the result!
+    const result = classify(findThis)
+
+    // Judge the result! 
+    const expected = {"prediction": "Yes","score": 0.021164021164021163}
+    verdict(result, expected, "This is close to a real world usage. And it found: " + JSON.stringify( result ) ) 
+}
+
+
+
+
+
 if (require.main === module) {
     const main = async () => {
         await get_data_via_file_test()
@@ -140,6 +181,7 @@ if (require.main === module) {
         test_get_probabilityA_programmatically()
         test_get_answer_manually()
         test_get_the_answer()
+        test_classify_ThisWillBeCloseToTheNormalWayToUseThis() 
     }
     main()
 }
