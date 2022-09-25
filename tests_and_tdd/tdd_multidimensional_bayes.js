@@ -5,7 +5,7 @@ const {
     verdict, closeEnough
 } = require("../utils/utils.js")
 
-const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels, classify } = require("../training/logic.js")
+const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels, classify } = require("../training/main_multidimensional_bayesian.js")
 
 
 const get_data_via_file_test = async () => {
