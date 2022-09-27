@@ -1,6 +1,6 @@
 const csv = require('csv-parser')
 const fs = require('fs')
-const { red } = require('../utils/utils')
+const { yellow } = require('../utils/utils')
 
 let predictions = {}     
 let matrix = {}
@@ -83,19 +83,28 @@ async function read_csv_file(path_to_file, dependentLabels, prediction) {
 function classify(labels) { 
     let score = 0 
     let found = undefined
+    let results = {} 
     for ( let prediction in predictions ) {
         const s = get_sum_of_labels(labels, prediction)
         if ( score < s ) {
             score = s
             found = prediction
         }
+        results[prediction] = {
+            score
+        }
     }
-    return { prediction:found, score: score }
+    let divisor = 0 
+    for ( let p in results ) {
+        divisor += results[p].score
+    }
+    const chance = score / divisor
+    return { prediction:found, score: score, chance:chance }
 }
 
 // This entire require.main stuff is NOT needed. It is here just to show me, in a year's time, how to run this. 
 if (require.main === module) {
-    red("BEGIN DEMO CODE")
+    yellow("BEGIN DEMO CODE")
     const main = async (path_to_data, empty_matrix) => { 
         const dependentVariables = ["Outlook", "Temperature", "Humidity", "Windy"]
         const prediction = "Play"
@@ -109,8 +118,11 @@ if (require.main === module) {
             Windy: "False"
         }
         const result = classify(findThis)
-        red("DEMONSTRATION CODE FOUND: " + JSON.stringify(result) )
-        red("END DEMO CODE")    
+        result["score"] = result["score"].toFixed(4)
+        result["chance"] = result["chance"].toFixed(2)
+        yellow(result)
+        
+        yellow("END DEMO CODE")    
     }
     main()
 

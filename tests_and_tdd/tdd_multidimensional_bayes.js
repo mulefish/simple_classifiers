@@ -2,7 +2,7 @@
 
 
 const {
-    verdict, closeEnough
+    verdict, closeEnough, cyan, yellow, green
 } = require("../utils/utils.js")
 
 const { read_csv_file, getMatrix, getPredictions, train, beginTraining, get_sum_of_labels, classify } = require("../training/main_multidimensional_bayesian.js")
@@ -75,12 +75,12 @@ const test_get_the_answer = () => {
     // green("B=" + B )
 
 
-    const all = A + B 
-    const yep = A / all 
-    const nah = B / all 
+    const all = A + B
+    const yep = A / all
+    const nah = B / all
 
     const actual = {
-        yep, 
+        yep,
         nah
     }
     const expected = { yep: 0.8223684210526315, nah: 0.17763157894736847 }
@@ -120,12 +120,12 @@ const test_get_answer_manually = () => {
 
     const total2 = sunny2 * hot2 * normalHumid2 * noWind2 * yes2
 
-    const all = total + total2 
-    const yep = total / all 
-    const nah = total2 / all 
+    const all = total + total2
+    const yep = total / all
+    const nah = total2 / all
 
     const actual = {
-        yep, 
+        yep,
         nah
     }
 
@@ -133,9 +133,9 @@ const test_get_answer_manually = () => {
     verdict(actual, expected, "test_get_answer_manually: " + JSON.stringify(actual))
 }
 
-const test_classify_ThisWillBeCloseToTheNormalWayToUseThis = () => { 
+const test_classify_ThisWillBeCloseToTheNormalWayToUseThis = () => {
     // Zero stuff out!
-    beginTraining() 
+    beginTraining()
 
     // Populate the data! 
     train({ "Outlook": "Rainy", "Temperature": "Hot", "Humidity": "High", "Windy": "False" }, 'No')
@@ -165,8 +165,55 @@ const test_classify_ThisWillBeCloseToTheNormalWayToUseThis = () => {
     const result = classify(findThis)
 
     // Judge the result! 
-    const expected = {"prediction": "Yes","score": 0.021164021164021163}
-    verdict(result, expected, "This is close to a real world usage. And it found: " + JSON.stringify( result ) ) 
+    const expected = { "prediction": "Yes", "score": 0.021164021164021163, "chance": 0.8223684210526315 }
+    verdict(result, expected, "This is close to a real world usage. And it found: " + JSON.stringify(result))
+}
+
+
+function test_math() {
+
+    beginTraining()
+    // Populate the data! 
+    train({ "Outlook": "Rainy", "Temperature": "Hot", "Humidity": "High", "Windy": "False" }, 'No')
+    train({ "Outlook": "Rainy", "Temperature": "Hot", "Humidity": "High", "Windy": "True" }, 'No')
+    train({ "Outlook": "Overcast", "Temperature": "Hot", "Humidity": "High", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Mild", "Humidity": "High", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Cool", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Cool", "Humidity": "Normal", "Windy": "True" }, 'No')
+    train({ "Outlook": "Overcast", "Temperature": "Cool", "Humidity": "Normal", "Windy": "True" }, 'Yes')
+    train({ "Outlook": "Rainy", "Temperature": "Mild", "Humidity": "High", "Windy": "False" }, 'No')
+    train({ "Outlook": "Rainy", "Temperature": "Cool", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Mild", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Rainy", "Temperature": "Mild", "Humidity": "Normal", "Windy": "True" }, 'Yes')
+    train({ "Outlook": "Overcast", "Temperature": "Mild", "Humidity": "High", "Windy": "True" }, 'Yes')
+    train({ "Outlook": "Overcast", "Temperature": "Hot", "Humidity": "Normal", "Windy": "False" }, 'Yes')
+    train({ "Outlook": "Sunny", "Temperature": "Mild", "Humidity": "High", "Windy": "True" }, 'No')
+
+    let matrix = getMatrix()
+
+    matrix["Outlook"]["Yes"]["Sunny"] = 2
+    matrix["Temperature"]["Yes"]["Hot"] = 2
+    matrix["Humidity"]["Yes"]["Normal"] = 6
+    matrix["Windy"]["Yes"]["False"] = 6
+
+    matrix["Outlook"]["No"]["Sunny"] = 3
+    matrix["Temperature"]["No"]["Hot"] = 2
+    matrix["Humidity"]["No"]["Normal"] = 1
+    matrix["Windy"]["No"]["False"] = 2
+
+    const seek = {
+        Outlook: "Sunny",
+        Temperature: "Hot",
+        Humidity: "Normal",
+        Windy: "False"
+    }
+    const result = classify(seek)
+    const expected = {
+        "prediction": "Yes",
+        "score": 0.014109347442680773,
+        "chance": 0.6729475100942126
+    }
+    verdict(result, expected, "double checked that finding is correct: " + JSON.stringify(result))
 }
 
 if (require.main === module) {
@@ -177,7 +224,8 @@ if (require.main === module) {
         test_get_probabilityA_programmatically()
         test_get_answer_manually()
         test_get_the_answer()
-        test_classify_ThisWillBeCloseToTheNormalWayToUseThis() 
+        test_classify_ThisWillBeCloseToTheNormalWayToUseThis()
+        test_math()
     }
     main()
 }
